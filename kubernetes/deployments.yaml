@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: f5tts-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: f5tts-api
+  template:
+    metadata:
+      labels:
+        app: f5tts-api
+    spec:
+      imagePullSecrets:
+        - name: ghcr-credentials
+      nodeSelector:
+        nvidia.com/gpu.product: NVIDIA-A30
+      containers:
+        - name: api
+          image: ghcr.io/aihpi/f5-tts-optim:latest
+          imagePullPolicy: Always
+          command:
+            - python3
+            - -m
+            - uvicorn
+            - f5_tts.demo.server:app
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8000"
+          env:
+            - name: MODEL_FILEPATH
+              value: /var/tmp/model_430000.safetensors
+          ports:
+            - containerPort: 8000
+          resources:
+            limits:
+              nvidia.com/gpu: "2"
+          volumeMounts:
+            - name: model-volume
+              mountPath: /var/tmp/
+      volumes:
+        - name: model-volume
+          persistentVolumeClaim:
+            claimName: f5tts-model-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: f5tts-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: f5tts-ui
+  template:
+    metadata:
+      labels:
+        app: f5tts-ui
+    spec:
+      imagePullSecrets:
+        - name: ghcr-credentials
+      containers:
+        - name: f5tts-ui
+          image: ghcr.io/aihpi/tts-demo:latest
+          imagePullPolicy: Always
+          command:
+            - streamlit
+          args:
+            - run
+            - src/tts_demo/main.py
+            - --server.port=8051
+            - --server.address=0.0.0.0
+          env:
+            - name: TTS_API_BASE_URL
+              value: https://tts.aisc.hpi.de/api
+            - name: API_USER
+              valueFrom:
+                secretKeyRef:
+                  name: f5tts-ui-env
+                  key: API_USER
+            - name: API_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: f5tts-ui-env
+                  key: API_PASSWORD
+          ports:
+            - containerPort: 8051

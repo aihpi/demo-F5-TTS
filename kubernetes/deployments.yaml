@@ -15,7 +15,7 @@ spec:
       imagePullSecrets:
         - name: ghcr-credentials
       nodeSelector:
-        nvidia.com/gpu.product: NVIDIA-A30
+        accelerator: a30
       containers:
         - name: api
           image: ghcr.io/aihpi/f5-tts-optim:latest
@@ -36,7 +36,7 @@ spec:
             - containerPort: 8000
           resources:
             limits:
-              nvidia.com/gpu: "2"
+              nvidia.com/gpu: "1"
           volumeMounts:
             - name: model-volume
               mountPath: /var/tmp/
@@ -74,7 +74,7 @@ spec:
             - --server.address=0.0.0.0
           env:
             - name: TTS_API_BASE_URL
-              value: https://tts.aisc.hpi.de/api
+              value: http://f5tts-api.f5-tts.svc.cluster.local:8004
             - name: API_USER
               valueFrom:
                 secretKeyRef:

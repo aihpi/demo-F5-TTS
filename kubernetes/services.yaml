@@ -11,17 +11,4 @@ spec:
       targetPort: 8000
       protocol: TCP
       nodePort: 31493
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: f5tts-ui
-spec:
-  type: LoadBalancer
-  selector:
-    app: f5tts-ui
-  ports:
-    - port: 80
-      targetPort: 8051
-      protocol: TCP
-      nodePort: 30804
+

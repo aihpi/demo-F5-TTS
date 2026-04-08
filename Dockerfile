@@ -17,7 +17,8 @@ WORKDIR /workspace
 
 RUN git clone https://github.com/aihpi/F5-TTS.git \
     && cd F5-TTS \
-    && pip install -e .[eval]
+    && pip install -e .[eval] \
+    && pip install -e ./kugelaudio-open-int4
 
 ENV SHELL=/bin/bash
 

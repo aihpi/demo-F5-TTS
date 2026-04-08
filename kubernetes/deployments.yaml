@@ -32,6 +32,18 @@ spec:
           env:
             - name: MODEL_FILEPATH
               value: /var/tmp/model_430000.safetensors
+            - name: KUGEL_AUDIO_ENABLED
+              value: "true"
+            - name: KUGEL_AUDIO_MODEL_ID_DE
+              value: kugel-audio-german-local
+            - name: KUGEL_AUDIO_MODEL_ID_EN
+              value: kugel-audio-english-local
+            - name: KUGEL_AUDIO_HF_REPO
+              value: kugelaudio/kugelaudio-0-open
+            - name: KUGEL_AUDIO_HF_REPO_EN
+              value: kugelaudio/kugelaudio-0-open
+            - name: KUGEL_AUDIO_PROCESSOR_PATH
+              value: /workspace/F5-TTS/kugelaudio-open-int4
           ports:
             - containerPort: 8000
           resources:

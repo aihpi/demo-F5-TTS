@@ -23,6 +23,7 @@ WORKDIR /workspace/F5-TTS
 COPY . .
 
 RUN git submodule update --init --recursive \
+    && pip install --no-cache-dir --no-build-isolation av==12.1.0 \
     && pip install --no-cache-dir -e .[eval] \
     && pip install --no-cache-dir -e ./kugelaudio
 

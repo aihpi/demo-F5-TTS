@@ -18,7 +18,7 @@ spec:
         accelerator: a30
       containers:
         - name: api
-          image: ghcr.io/aihpi/f5-tts-optim:latest
+          image: ghcr.io/aihpi/f5-tts-optim:main
           imagePullPolicy: Always
           command:
             - python3
@@ -43,7 +43,7 @@ spec:
             - name: KUGEL_AUDIO_HF_REPO_EN
               value: kugelaudio/kugelaudio-0-open
             - name: KUGEL_AUDIO_PROCESSOR_PATH
-              value: /workspace/F5-TTS/kugelaudio 
+              value: /workspace/F5-TTS/kugelaudio
           ports:
             - containerPort: 8000
           resources:

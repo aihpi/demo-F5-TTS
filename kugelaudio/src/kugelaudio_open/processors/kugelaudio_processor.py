@@ -78,7 +78,7 @@ class KugelAudioProcessor:
                 )
                 with open(config_file, "r") as f:
                     config = json.load(f)
-            except Exception as e:
+            except Exception:
                 config = {
                     "speech_compression_ratio": 3200,
                     "db_normalize": True,
@@ -123,6 +123,7 @@ class KugelAudioProcessor:
                         voices_registry = json.load(f)
                     voices_dir = os.path.dirname(voices_file)
             except Exception:
+                pass
 
         return cls(
             tokenizer=tokenizer,
@@ -214,6 +215,7 @@ class KugelAudioProcessor:
                     f"voices/{voice_file}",
                 )
             except Exception as e:
+                pass
 
         # Strategy 3: Encode from .wav on the fly if .pt missing and model provided
         if voice_path is None and model is not None and self.voices_dir:

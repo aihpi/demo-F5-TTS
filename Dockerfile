@@ -1,7 +1,6 @@
 FROM pytorch/pytorch:2.4.0-cuda12.4-cudnn9-devel
 
 USER root
-
 ARG DEBIAN_FRONTEND=noninteractive
 
 LABEL github_repo="https://github.com/SWivid/F5-TTS"
@@ -13,13 +12,14 @@ RUN set -x \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
-WORKDIR /workspace
+WORKDIR /workspace/F5-TTS
 
-RUN git clone https://github.com/aihpi/F5-TTS.git \
-    && cd F5-TTS \
-    && pip install -e .[eval] \
-    && pip install -e ./kugelaudio-open-int4
+# Copy the repository into the image including all submodules (if any)
+COPY . .
+
+# Init submodules and install everything
+RUN git submodule update --init --recursive \
+    && pip install --no-cache-dir -e .[eval] \
+    && pip install --no-cache-dir -e ./kugelaudio
 
 ENV SHELL=/bin/bash
-
-WORKDIR /workspace/F5-TTS

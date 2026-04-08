@@ -1,0 +1,11 @@
+{
+  "processor_class": "KugelAudioProcessor",
+  "language_model_pretrained_name": "Qwen/Qwen2.5-7B",
+  "speech_compression_ratio": 3200,
+  "db_normalize": true,
+  "audio_processor": {
+    "sampling_rate": 24000,
+    "normalize_audio": true,
+    "target_dB_FS": -25
+  }
+}

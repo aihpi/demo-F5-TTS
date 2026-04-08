@@ -7,17 +7,21 @@ LABEL github_repo="https://github.com/SWivid/F5-TTS"
 
 RUN set -x \
     && apt-get update \
-    && apt-get -y install wget curl man git less openssl libssl-dev unzip unar build-essential aria2 tmux vim \
-    && apt-get install -y openssh-server sox libsox-fmt-all libsox-fmt-mp3 libsndfile1-dev ffmpeg \
+    && apt-get -y install \
+        wget curl man git less openssl libssl-dev unzip unar \
+        build-essential aria2 tmux vim openssh-server \
+        sox libsox-fmt-all libsox-fmt-mp3 libsndfile1-dev \
+        ffmpeg \
+        libavcodec-dev libavformat-dev libavdevice-dev \
+        libavutil-dev libavfilter-dev libswscale-dev libswresample-dev \
+        pkg-config \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
 WORKDIR /workspace/F5-TTS
 
-# Copy the repository into the image including all submodules (if any)
 COPY . .
 
-# Init submodules and install everything
 RUN git submodule update --init --recursive \
     && pip install --no-cache-dir -e .[eval] \
     && pip install --no-cache-dir -e ./kugelaudio

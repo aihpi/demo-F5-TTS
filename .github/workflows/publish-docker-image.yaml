@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
     permissions:
-      contents: read
+      contents: write
       packages: write
       # 
     steps:
@@ -63,3 +63,46 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+      - name: Extract Docker metadata
+        id: meta_tts
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            # Putting type=sha first makes it the primary 'version'
+            type=sha,format=short,prefix=sha-
+            type=raw,value=latest
+
+      - name: Update Kubernetes Manifest
+        id: update_step
+        run: |
+          # Extract the SHA tag once and store it in a variable
+          NEW_TAG=$(echo '${{ steps.meta_tts.outputs.json }}' | jq -r '.tags[] | select(contains("sha-"))' | cut -d':' -f2)
+          echo "tag=$NEW_TAG" >> $GITHUB_OUTPUT
+          
+          TARGET_FILE="kubernetes/deployments.yaml"
+          
+          echo "Updating $TARGET_FILE with image tag: $NEW_TAG"
+          
+          if [ -f "$TARGET_FILE" ]; then
+            sed -i "s|image: ${{ env.IMAGE_NAME }}:.*|image: ${{ env.IMAGE_NAME }}:${NEW_TAG}|g" "$TARGET_FILE"
+          else
+            echo "ERROR: $TARGET_FILE not found."
+            exit 1
+          fi
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Use the tag we saved in the previous step
+          TAG_NAME="${{ steps.update_step.outputs.tag }}"
+
+          if git diff --exit-code kubernetes/deployments.yaml; then
+            echo "No changes to manifest. Skipping commit."
+          else
+            git add kubernetes/deployments.yaml
+            git commit -m "chore: update ui image to ${TAG_NAME} [skip ci]"
+            git push origin main
+          fi

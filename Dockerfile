@@ -22,9 +22,8 @@ WORKDIR /workspace/F5-TTS
 
 COPY . .
 
-RUN git clone https://github.com/aihpi/demo-F5-TTS.git F5-TTS \
-    && cd F5-TTS \
-    && pip install --no-cache-dir -e .[eval] \
+RUN pip install --no-cache-dir -e .[eval] \
+    && sed -i '1s/^/import os\nimport sys\nsys.path.append(os.path.dirname(os.path.abspath(__file__)))\n/' src/third_party/BigVGAN/bigvgan.py \
     && pip install --no-cache-dir -e ./kugelaudio
 
 ENV SHELL=/bin/bash

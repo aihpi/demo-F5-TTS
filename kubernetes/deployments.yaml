@@ -15,7 +15,7 @@ spec:
       imagePullSecrets:
         - name: ghcr-credentials
       nodeSelector:
-        accelerator: h100
+        accelerator: a30
       containers:
         - name: api
           image: ghcr.io/aihpi/f5-tts-optim:main

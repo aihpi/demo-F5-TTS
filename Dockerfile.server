@@ -1,6 +1,12 @@
-FROM pytorch/pytorch:2.4.0-cuda12.4-cudnn9-devel
+# CUDA 13.1 + cuDNN 9 — matches node driver 590.48.01 on gx16 (A30, compute 8.0)
+FROM pytorch/pytorch:2.7.0-cuda13.1-cudnn9-devel
 
 ARG DEBIAN_FRONTEND=noninteractive
+
+# Pinned together — torchaudio must share the same PyTorch ABI.
+# Update both atomically whenever the base image is bumped.
+ARG TORCH_VERSION=2.7.0
+ARG CUDA_TAG=cu131
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -23,6 +29,14 @@ RUN git clone $GIT_REPOSITORY \
     && printf "$BIGVGAN_PATCH" | cat - src/third_party/BigVGAN/bigvgan.py > temp && mv temp src/third_party/BigVGAN/bigvgan.py \
     && pip install -e .[eval] \
     && pip install -r src/third_party/BigVGAN/requirements.txt
+
+# Force-reinstall torch + torchaudio from the official CUDA 13.1 wheel index so they
+# share the same ABI regardless of what pip resolved above.  This must be a separate
+# RUN so Docker cache invalidation is scoped to version bumps, not source changes.
+RUN pip install --no-cache-dir --force-reinstall \
+    torch==${TORCH_VERSION} \
+    torchaudio==${TORCH_VERSION} \
+    --index-url https://download.pytorch.org/whl/${CUDA_TAG}
 
 # for prototyping
 COPY src/f5_tts/demo/ /app/F5-TTS/src/f5_tts/demo/

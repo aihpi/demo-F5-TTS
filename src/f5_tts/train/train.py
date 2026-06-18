@@ -1,8 +1,7 @@
 # training script.
 
-from importlib.resources import files
 
-from f5_tts.model import CFM, DiT, Trainer, UNetT
+from f5_tts.model import CFM, DiT, Trainer
 from f5_tts.model.dataset import load_dataset
 from f5_tts.model.utils import get_tokenizer
 

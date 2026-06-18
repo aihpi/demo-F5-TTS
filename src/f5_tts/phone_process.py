@@ -79,7 +79,7 @@ def process_directory(input_dir):
 
     # Count successful conversions
     successful = sum(1 for future in futures if future.result())
-    print(f"\nProcessing complete!")
+    print("\nProcessing complete!")
     print(f"Successfully processed: {successful}/{len(audio_files)} files")
     print(f"Output directory: {output_dir}")
 

@@ -1,6 +1,5 @@
 # A unified script for inference process
 # Make adjustments inside functions, and consider both gradio and cli scripts if need to change func output format
-import math
 import os
 import sys
 

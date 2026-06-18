@@ -9,7 +9,6 @@ import shutil
 import sys
 
 import pandas as pd
-from numpy.compat import os_PathLike
 
 from sklearn.model_selection import train_test_split
 

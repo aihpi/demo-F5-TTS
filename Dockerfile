@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:2.4.0-cuda12.4-cudnn9-devel
+FROM pytorch/pytorch:2.6.0-cuda12.6-cudnn9-devel
 
 USER root
 ARG DEBIAN_FRONTEND=noninteractive
@@ -21,6 +21,11 @@ RUN set -x \
 WORKDIR /workspace/F5-TTS
 
 COPY . .
+
+RUN pip install --no-cache-dir \
+        "torch==2.6.0" \
+        "torchaudio==2.6.0" \
+        --index-url https://download.pytorch.org/whl/cu126
 
 RUN pip install --no-cache-dir -e .[eval] \
     && sed -i '1s/^/import os\nimport sys\nsys.path.append(os.path.dirname(os.path.abspath(__file__)))\n/' src/third_party/BigVGAN/bigvgan.py \
